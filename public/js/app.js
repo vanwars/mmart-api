@@ -79,6 +79,8 @@ angular.module("contactsApp", ['ngRoute'])
         }
 
         $scope.saveContact = function(contact) {
+            console.log(contact);
+            return;
             Contacts.createContact(contact).then(function(doc) {
                 var contactUrl = "/contact/" + doc.data._id;
                 $location.path(contactUrl);

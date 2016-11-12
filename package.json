@@ -22,6 +22,10 @@
     "url": "https://github.com/chrisckchang/mean-contactlist/issues"
   },
   "homepage": "https://github.com/chrisckchang/mean-contactlist",
+  "engines": {
+    "node": "~4.2.1",
+    "npm": "~2.2.0"
+  },
   "dependencies": {
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
