@@ -67,17 +67,25 @@ app.get("/contacts", function(req, res) {
 var fs = require('fs');
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
-app.post('/file-upload', multipartMiddleware, function(req, res) {
+app.post('/file-upload', multipartMiddleware, function (req, res) {
+    'use strict';
+    var tmp_path, target_path;
     console.log(req.body, req.files);
-    var tmp_path = req.files.thumbnail.path;
+    tmp_path = req.files.thumbnail.path;
     // set where the file should actually exists - in this case it is in the "images" directory
-    var target_path = '/tmp/' + req.files.thumbnail.name;
+    target_path = process.env.FILES + req.files.thumbnail.name;
+    console.log("temporary path:", tmp_path);
+    console.log("target path:", target_path);
     // move the file from the temporary location to the intended location
-    fs.rename(tmp_path, target_path, function(err) {
-        if (err) throw err;
+    fs.rename(tmp_path, target_path, function (err) {
+        if (err) {
+            throw err;
+        }
         // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-        fs.unlink(tmp_path, function() {
-            if (err) throw err;
+        fs.unlink(tmp_path, function () {
+            if (err) {
+                throw err;
+            }
             res.status(201).json({
                 "message": 'File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes'
             });
