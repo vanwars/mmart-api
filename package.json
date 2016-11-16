@@ -16,7 +16,7 @@
     "Express",
     "Angular"
   ],
-  "author": "Chris Chang",
+  "author": "vanwars",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/chrisckchang/mean-contactlist/issues"
@@ -30,6 +30,8 @@
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
     "mongodb": "^2.0.43",
-    "connect-multiparty": "^2.0.0"
+    "connect-multiparty": "^2.0.0",
+    "aws-sdk": "^2.7.2",
+    "flow": "^0.2.3"
   }
 }

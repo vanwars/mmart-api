@@ -1,7 +1,14 @@
-# mean-contactlist
+# S3 File setup instructions
 
-Contact List is a RESTful API server and web application built with the MEAN stack. It is a simple example that aims to concisely demonstrate basic MEAN and REST architecture. You can find the full tutorial here: https://devcenter.heroku.com/articles/mean-apps-restful-api.
 
-You can deploy a live copy of this application to Heroku with the button below.
+## Local Server
+export AWS_ACCESS_KEY_ID=XXXXX
+export AWS_ACCESS_ACCESS_KEY=XXXX
+export AWS_S3_BUCKET=XXXXXXXX
+export BLITLINE_API_KEY=XXXXX
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/chrisckchang/mean-contactlist)
+## Heroku Server
+heroku config:add AWS_ACCESS_KEY_ID=XXXXX
+heroku config:add AWS_ACCESS_ACCESS_KEY=XXXX
+heroku config:add AWS_S3_BUCKET=XXXXXXXX
+heroku config:add BLITLINE_API_KEY=XXXXX

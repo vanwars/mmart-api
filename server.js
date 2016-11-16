@@ -1,8 +1,10 @@
 var express = require("express");
+var aws = require('aws-sdk');
 var path = require("path");
 var bodyParser = require("body-parser");
 var mongodb = require("mongodb");
 var ObjectID = mongodb.ObjectID;
+
 
 var CONTACTS_COLLECTION = "contacts";
 var allowCrossDomain = function (req, res, next) {
@@ -41,13 +43,71 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI || LOCAL_MONGODB, function (
   });
 });
 
-// CONTACTS API ROUTES BELOW
 
 // Generic error handler used by all endpoints.
 function handleError(res, reason, message, code) {
   console.log("ERROR: " + reason);
   res.status(code || 500).json({"error": message});
 }
+
+/********************************************************/
+/*             S3 File Upload Experiment                */
+/********************************************************/
+var S3_BUCKET = process.env.S3_BUCKET;
+var fs = require('fs'),
+    AWS = require('aws-sdk'),
+    fs = require('fs'),
+    path = require('path'),
+    flow = require('flow'),
+    multipart = require('connect-multiparty'),
+    multipartMiddleware = multipart(),
+    configPath = path.join(__dirname, "config.json");
+//AWS.config.loadFromPath(configPath);
+// SEE: http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
+app.post('/s3-upload', multipartMiddleware, function (req, res) {
+    'use strict';
+    var s3 = new AWS.S3(),
+        fileObject = req.files.image_path,
+        tmp_path = fileObject.path,
+        originalName = fileObject.name,
+        file = req.files,
+        result = {
+            error: 0,
+            uploaded: []
+        };
+    //console.log(req.body, req.files);
+
+    flow.exec(
+        function () { // Read temp File
+            fs.readFile(tmp_path, this);
+        },
+        function (err, data) { // Upload file to S3
+            s3.putObject({
+                Bucket: process.env.AWS_S3_BUCKET, //Bucket Name //process.env.AWS_S3_BUCKET
+                Key: originalName, //Upload File Name, Default the original name
+                Body: data
+            }, this);
+        },
+        function (err, data) { //Upload Callback
+            if (err) {
+                console.error('Error : ' + err);
+                console.error('data : ' + data);
+                result.error++;
+                return;
+            }
+            result.uploaded.push(data.ETag);
+            this();
+        },
+        function () {
+            res.status(201).json({
+                message: 'File ' + fileObject.name + ' uploaded to: S3: ' +
+                    fileObject.size + ' bytes'
+            });
+        }
+    );
+});
+/********************************************************/
+
 
 /*  "/contacts"
  *    GET: finds all contacts
