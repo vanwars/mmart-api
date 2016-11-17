@@ -7,9 +7,10 @@ var ObjectID = mongodb.ObjectID;
 
 
 var CONTACTS_COLLECTION = "contacts";
+var VIDEO_COLLECTION = "videos";
 var allowCrossDomain = function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,PATCH,DELETE');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,PATCH,OPTIONS,DELETE');
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 };
@@ -62,8 +63,8 @@ var fs = require('fs'),
     multipart = require('connect-multiparty'),
     multipartMiddleware = multipart(),
     configPath = path.join(__dirname, "config.json");
-//AWS.config.loadFromPath(configPath);
-// SEE: http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
+    //AWS.config.loadFromPath(configPath);
+    // SEE: http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
 app.post('/s3-upload', multipartMiddleware, function (req, res) {
     'use strict';
     var s3 = new AWS.S3(),
@@ -124,54 +125,82 @@ app.get("/contacts", function(req, res) {
   });
 });
 
-var fs = require('fs');
-var multipart = require('connect-multiparty');
-var multipartMiddleware = multipart();
-app.post('/file-upload', multipartMiddleware, function (req, res) {
+/***************************************/
+/*            Youtube Videos           */
+/***************************************/
+app.get("/videos", function (req, res) {
     'use strict';
-    var tmp_path, target_path;
-    console.log(req.body, req.files);
-    tmp_path = req.files.thumbnail.path;
-    // set where the file should actually exists - in this case it is in the "images" directory
-    target_path = process.env.FILES + req.files.thumbnail.name;
-    console.log("temporary path:", tmp_path);
-    console.log("target path:", target_path);
-    // move the file from the temporary location to the intended location
-    fs.rename(tmp_path, target_path, function (err) {
+    db.collection(VIDEO_COLLECTION).find({}).toArray(function (err, docs) {
         if (err) {
-            throw err;
+            handleError(res, err.message, "Failed to get contacts.");
+        } else {
+            res.status(200).json(docs);
         }
-        // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-        fs.unlink(tmp_path, function () {
-            if (err) {
-                throw err;
-            }
-            res.status(201).json({
-                "message": 'File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes'
-            });
-        });
     });
 });
 
-/*app.post('/file-upload', function(req, res) {
-    
-    console.log("REQ.BODY", req.body);
-    console.log("REQ.FILES", req.files);
-    console.log("REQ", req);
-    // get the temporary location of the file
-    var tmp_path = req.files.thumbnail.path;
-    // set where the file should actually exists - in this case it is in the "images" directory
-    var target_path = './public/images/' + req.files.thumbnail.name;
-    // move the file from the temporary location to the intended location
-    fs.rename(tmp_path, target_path, function(err) {
-        if (err) throw err;
-        // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-        fs.unlink(tmp_path, function() {
-            if (err) throw err;
-            res.send('File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes');
-        });
+app.get("/videos/:id", function (req, res) {
+    'use strict';
+    db.collection(VIDEO_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function (err, doc) {
+        if (err) {
+            handleError(res, err.message, "Failed to get contact");
+        } else {
+            res.status(200).json(doc);
+        }
     });
-});*/
+});
+
+app.put("/videos/:id", function(req, res) {
+    'use strict';
+    var updateDoc = req.body;
+    delete updateDoc._id;
+
+    db.collection(VIDEO_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function (err, doc) {
+        if (err) {
+            handleError(res, err.message, "Failed to update contact");
+        } else {
+            res.status(204).end();
+        }
+    });
+});
+
+app.delete("/videos/:id", function (req, res) {
+    'use strict';
+    db.collection(VIDEO_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function (err, result) {
+        if (err) {
+            handleError(res, err.message, "Failed to delete contact");
+        } else {
+            res.status(204).end();
+        }
+    });
+});
+
+app.post("/videos", function (req, res) {
+    'use strict';
+    var newVideo = req.body;
+    newVideo.createDate = new Date();
+    if (!(req.body.youtube_id)) {
+        handleError(res, "Invalid user input", "Must provide a youtube_id.", 400);
+    }
+    if (!(req.body.username)) {
+        handleError(res, "Invalid user input", "Must provide a username.", 400);
+    }
+    if (!(req.body.description)) {
+        handleError(res, "Invalid user input", "Must provide a description.", 400);
+    }
+    if (!(req.body.genre)) {
+        handleError(res, "Invalid user input", "Must provide a genre.", 400);
+    }
+    db.collection(VIDEO_COLLECTION).insertOne(newVideo, function (err, doc) {
+        if (err) {
+            handleError(res, err.message, "Failed to create new video.");
+        } else {
+            console.log(doc.ops[0]);
+            res.status(201).json(doc.ops[0]);
+        }
+    });
+});
+/***************************************/
 
 app.post("/contacts", function(req, res) {
   var newContact = req.body;
