@@ -130,7 +130,17 @@ app.get("/contacts", function(req, res) {
 /***************************************/
 app.get("/videos", function (req, res) {
     'use strict';
-    db.collection(VIDEO_COLLECTION).find({}).toArray(function (err, docs) {
+    var query = {};
+    if (req.query.username) {
+        query.username = req.query.username;
+    }
+    if (req.query.youtube_id) {
+        query.youtube_id = req.query.youtube_id;
+    }
+    if (req.query.genre) {
+        query.genre = req.query.genre;
+    }
+    db.collection(VIDEO_COLLECTION).find(query).toArray(function (err, docs) {
         if (err) {
             handleError(res, err.message, "Failed to get contacts.");
         } else {
