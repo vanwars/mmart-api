@@ -162,6 +162,18 @@ app.get("/videos/:id", function (req, res) {
 
 app.put("/videos/:id", function(req, res) {
     'use strict';
+    if (!(req.body.youtube_id)) {
+        handleError(res, "Invalid user input", "Must provide a youtube_id.", 400);
+    }
+    if (!(req.body.username)) {
+        handleError(res, "Invalid user input", "Must provide a username.", 400);
+    }
+    if (!(req.body.description)) {
+        handleError(res, "Invalid user input", "Must provide a description.", 400);
+    }
+    if (!(req.body.genre)) {
+        handleError(res, "Invalid user input", "Must provide a genre.", 400);
+    }
     var updateDoc = req.body;
     delete updateDoc._id;
 
