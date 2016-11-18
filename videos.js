@@ -4,9 +4,10 @@ var ObjectID = mongodb.ObjectID;
 
 exports.list = function (req, res) {
     'use strict';
-    var query = {};
-    if (req.query.username) {
-        query.username = req.query.username;
+    var query = {},
+        username = req.query.username || req.params.username;
+    if (username) {
+        query.username = username;
     }
     if (req.query.youtube_id) {
         query.youtube_id = req.query.youtube_id;

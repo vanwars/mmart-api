@@ -53,18 +53,20 @@ app.all('*', function (request, response, next) {
     };
     next();
 });
+app.get('/videos/:id([0-9a-fA-F]+)/', videos.get);
 app.get('/videos/', videos.list);
+app.get('/videos/:username/', videos.list);
 app.post('/videos/', videos.post);
-app.get('/videos/:id/', videos.get);
-app.put('/videos/:id/', videos.put);
-app.delete('/videos/:id/', videos.delete);
+app.put('/videos/:id([0-9a-fA-F]+)/', videos.put);
+app.delete('/videos/:id([0-9a-fA-F]+)/', videos.delete);
 
 // Contacts
+app.get('/contacts/:id([0-9a-fA-F]+)/', contacts.get);
 app.get('/contacts/', contacts.list);
+app.get('/contacts/:username/', contacts.list);
 app.post('/contacts/', contacts.post);
-app.get('/contacts/:id/', contacts.get);
-app.put('/contacts/:id/', contacts.put);
-app.delete('/contacts/:id/', contacts.delete);
+app.put('/contacts/:id([0-9a-fA-F]+)/', contacts.put);
+app.delete('/contacts/:id([0-9a-fA-F]+)/', contacts.delete);
 
 // Image S3 Server transfer:
 var multipart = require('connect-multiparty'),
