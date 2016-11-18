@@ -16,8 +16,6 @@ exports.list = function (req, res) {
 exports.post = function(req, res) {
     'use strict';
     var newContact = req.body;
-    console.log(req);
-    console.log(req.body);
     newContact.createDate = new Date();
 
     if (!(req.body.firstName || req.body.lastName)) {

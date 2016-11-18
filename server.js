@@ -1,9 +1,9 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var mongodb = require("mongodb");
-var videos = require("./videos");
-var contacts = require("./contacts");
-var images = require("./images");
+var videos = require("./controllers/videos");
+var contacts = require("./controllers/contacts");
+var images = require("./controllers/images");
 
 var allowCrossDomain = function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
