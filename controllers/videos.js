@@ -14,7 +14,18 @@ var validateCreateUpdate = function (keys, req, res) {
 
 exports.list = function (req, res) {
     'use strict';
-    var query = req.query;
+    var query = {},
+        fields = ['youtube_id', 'username', 'description', 'genre'],
+        i,
+        field,
+        val;
+    for (i = 0; i < fields.length; i++) {
+        field = fields[i];
+        val = req.query[field];
+        if (val) {
+            query[field] = val;
+        }
+    }
     if (req.params.username) {
         query.username = req.params.username;
     }
