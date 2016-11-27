@@ -79,10 +79,9 @@ var multipart = require('connect-multiparty'),
 detailPaths = ['/images/:id([0-9a-fA-F]+)/', '/:username/images/:id([0-9a-fA-F]+)/'];
 listPaths = ['/images/', '/:username/images/'];
 app.get(listPaths, multipartMiddleware, images.list);
+app.get(detailPaths, multipartMiddleware, images.get);
 app.post(listPaths, multipartMiddleware, images.post);
-
-//legacy:
-app.post('/s3-upload', multipartMiddleware, images.post);
+app.delete(detailPaths, images.delete);
 
 
 

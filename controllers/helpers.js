@@ -7,3 +7,15 @@ exports.validateCreateUpdate = function (keys, req, res) {
         }
     }
 };
+
+exports.generateUUID = function (len) {
+    'use strict';
+    var text = "",
+        i,
+        possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+    len = len || 32;
+    for (i = 0; i < len; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+};
