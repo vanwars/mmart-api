@@ -4,7 +4,11 @@ var ObjectID = mongodb.ObjectID;
 
 exports.list = function (req, res) {
     'use strict';
-    req.db.collection(CONTACTS_COLLECTION).find({}).toArray(function (err, docs) {
+    var query = {};
+    if (req.params.username) {
+        query.username = req.params.username;
+    }
+    req.db.collection(CONTACTS_COLLECTION).find(query).toArray(function (err, docs) {
         if (err) {
             req.handleError(res, err.message, "Failed to get contacts.");
         } else {

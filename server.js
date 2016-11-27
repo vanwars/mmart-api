@@ -53,24 +53,35 @@ app.all('*', function (request, response, next) {
     };
     next();
 });
-app.get('/videos/:id([0-9a-fA-F]+)/', videos.get);
-app.get('/videos/', videos.list);
-app.get('/videos/:username/', videos.list);
-app.post('/videos/', videos.post);
-app.put('/videos/:id([0-9a-fA-F]+)/', videos.put);
-app.delete('/videos/:id([0-9a-fA-F]+)/', videos.delete);
+
+//Videos:
+var detailPaths = ['/videos/:id([0-9a-fA-F]+)/', '/:username/videos/:id([0-9a-fA-F]+)/'],
+    listPaths = ['/videos/', '/:username/videos/'];
+app.get(detailPaths, videos.get);
+app.get(listPaths, videos.list);
+app.post(listPaths, videos.post);
+app.put(detailPaths, videos.put);
+app.delete(detailPaths, videos.delete);
 
 // Contacts
-app.get('/contacts/:id([0-9a-fA-F]+)/', contacts.get);
-app.get('/contacts/', contacts.list);
-app.get('/contacts/:username/', contacts.list);
-app.post('/contacts/', contacts.post);
-app.put('/contacts/:id([0-9a-fA-F]+)/', contacts.put);
-app.delete('/contacts/:id([0-9a-fA-F]+)/', contacts.delete);
+detailPaths = ['/contacts/:id([0-9a-fA-F]+)/', '/:username/contacts/:id([0-9a-fA-F]+)/'];
+listPaths = ['/contacts/', '/:username/contacts/'];
+app.get(detailPaths, contacts.get);
+app.get(listPaths, contacts.list);
+app.post(listPaths, contacts.post);
+app.put(detailPaths, contacts.put);
+app.delete(detailPaths, contacts.delete);
 
-// Image S3 Server transfer:
+
+// Images + S3 Storage:
 var multipart = require('connect-multiparty'),
     multipartMiddleware = multipart();
+detailPaths = ['/images/:id([0-9a-fA-F]+)/', '/:username/images/:id([0-9a-fA-F]+)/'];
+listPaths = ['/images/', '/:username/images/'];
+app.get(listPaths, multipartMiddleware, images.list);
+app.post(listPaths, multipartMiddleware, images.post);
+
+//legacy:
 app.post('/s3-upload', multipartMiddleware, images.post);
 
 
