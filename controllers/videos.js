@@ -1,7 +1,7 @@
 var VIDEO_COLLECTION = "videos";
 var mongodb = require("mongodb");
 var ObjectID = mongodb.ObjectID;
-var helpers = require("./helpers");
+var helpers = require("../lib/helpers");
 
 exports.list = function (req, res) {
     'use strict';

@@ -5,11 +5,12 @@
  * AWS_SECRET_ACCESS_KEY
  */
 
-var helpers = require("./helpers");
+var helpers = require("../lib/helpers");
 var IMAGE_COLLECTION = "images";
 var mongodb = require("mongodb");
 var im = require('imagemagick');
 var ObjectID = mongodb.ObjectID;
+var thumbnailer = require("../lib/thumbnailer");
 
 // SEE: http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
 var S3_BUCKET = process.env.AWS_S3_BUCKET,
@@ -44,6 +45,7 @@ exports.list = function (req, res) {
     });
 };
 
+/*
 var deleteThumbnails = function (opts, callback) {
     'use strict';
     var s3 = new AWS.S3(),
@@ -85,118 +87,27 @@ var deleteThumbnails = function (opts, callback) {
         }
     );
 };
-
-var generateThumbnails = function (opts, callback) {
-    'use strict';
-    var s3 = new AWS.S3(),
-        req = opts.req,
-        res = opts.res,
-        newImage = opts.newImage,
-        thumb = newImage.images[opts.index];
-
-    //because of asynchronosity, this is a recursive function:
-    if (opts.index >= newImage.images.length) {
-        callback();
-        return; //exit the function
-    }
-
-    // Do the thumbnailing + S3 file transfer:
-    flow.exec(
-        function () {
-            //if no width, then skip thumbnailing:
-            if (thumb.w) {
-                im.resize({
-                    srcPath: newImage.tmp_path,
-                    dstPath: thumb.file_path,
-                    width: thumb.w
-                }, this);
-            } else {
-                this();
-            }
-        },
-        function (err, stdout, stderr) {
-            if (err) {
-                req.handleError(res, err, stdout + stderr + "Failed to generate thumbnail.");
-            } else {
-                fs.readFile(thumb.file_path, this);
-            }
-        },
-        function (err, data) { // Upload file to S3
-            if (err) {
-                req.handleError(res, err, "Failed to read file.");
-            } else {
-                console.log("transferring...", thumb.key);
-                s3.putObject({
-                    Bucket: S3_BUCKET,
-                    Key: thumb.key,
-                    Body: data
-                }, this);
-            }
-        },
-        function (err, data) { //Upload Callback
-            if (err) {
-                req.handleError(res, err, "Failed to put image onto S3");
-            }
-            thumb.ETag = data.ETag;
-            thumb.file_path = "https://s3-us-west-1.amazonaws.com/" +
-                    S3_BUCKET + "/" + thumb.key;
-            this();
-        },
-        function () {
-            //note: this is a recursive function:
-            ++opts.index;
-            generateThumbnails(opts, callback);
-        }
-    );
-};
-
+*/
 exports.post = function (req, res) {
     'use strict';
-    var fileObject = req.files.file_path,
-        requiredFields = ['username'],
-        uuID,
-        extension,
-        newImage;
+    var requiredFields = ['username'],
+        isValid;
 
-    //validate file object
-    if (!fileObject) {
-        req.handleError(res, "Invalid user input", "Must provide a file_path.", 400);
+    isValid = helpers.validateCreateUpdate(requiredFields, req, res);
+    if (!isValid) {
         return;
     }
-    extension = fileObject.path.split(".");
-    extension = extension[extension.length - 1].toLowerCase();
-    uuID = helpers.generateUUID();
-    req.body.file_name = fileObject.name;
-
-    helpers.validateCreateUpdate(requiredFields, req, res);
-    newImage = req.body;
-    newImage.createDate = new Date();
-    newImage.tmp_path = fileObject.path;
-    newImage.images = [
-        {
-            file_path: newImage.tmp_path,
-            key: uuID + "." + extension
-        }, {
-            w: 640,
-            file_path: 'tmp/resized_640',
-            key: uuID + "_thumb640." + extension
-        }, {
-            w: 300,
-            file_path: 'tmp/resized_300',
-            key: uuID + "_thumb300." + extension
-        }, {
-            w: 64,
-            file_path: 'tmp/resized_64',
-            key: uuID + "_thumb64." + extension
-        }
-    ];
-
-    generateThumbnails({
+    thumbnailer.generateThumbnails({
         req: req,
         res: res,
-        newImage: newImage,
+        image: req.files.image,
         index: 0
-    }, function () {
+    }, function (images) {
+        var newImage = req.body;
+        newImage.createDate = new Date();
+        if (images) {
+            newImage.images = images;
+        }
         //if the S3 transfer was successful, insert a record:
         req.db.collection(IMAGE_COLLECTION).insertOne(newImage, function (err, doc) {
             if (err) {
@@ -224,36 +135,37 @@ exports.get = function (req, res) {
 
 exports.delete = function (req, res) {
     'use strict';
-    var image;
+    //var image;
     flow.exec(
         function () {
             // get image from database:
             req.db.collection(IMAGE_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, this);
         },
-        function (err, doc) {
+        function (err, record) {
             // store image in local variable or throw error:
             if (err) {
                 req.handleError(res, err.message, "Failed to get image");
             } else {
-                console.log(doc);
-                image = doc;
+                console.log(record);
+                //image = record;
+                this(record);
             }
-            this();
         },
-        function () {
-            deleteThumbnails({
+        function (record) {
+            thumbnailer.deleteThumbnails({
                 req: req,
                 res: res,
-                image: image,
+                record: record,
                 index: 0
-            }, function () {
-                req.db.collection(IMAGE_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function (err, result) {
-                    if (err) {
-                        req.handleError(res, err.message, "Failed to delete image from DB");
-                    } else {
-                        res.status(204).json(result).end();
-                    }
-                });
+            }, this);
+        },
+        function () {
+            req.db.collection(IMAGE_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function (err, result) {
+                if (err) {
+                    req.handleError(res, err.message, "Failed to delete image from DB");
+                } else {
+                    res.status(204).json(result).end();
+                }
             });
         }
     );

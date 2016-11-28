@@ -13,10 +13,9 @@ You may name your endpoint anything you want, and if it doesn't exist, it will b
 ## Naming conventions
 Each of your endpoints can store any field that you wish, however
 there are a few special naming conventions that you should use if you
-want your data to be treated as an image, audio file, or date:
+want your data to be treated as an image or as an audio file:
 * Images: any key that is prefaced with an **image_** string will be treated as an image.
 * Audio: any key that is prefaced with an **audio_** string will be treated as an audio file.
-* Dates: any key that is prefaced with a **date_** string will be treated as a date.
 
 # S3 File setup instructions
 
