@@ -4,6 +4,8 @@ exports.validateCreateUpdate = function (keys, req, res) {
     for (i = 0; i < keys.length; i++) {
         if (!req.body[keys[i]] || req.body[keys[i]].toString().length < 1) {
             req.handleError(res, "Invalid user input", "Must provide a " + keys[i] + ".", 400);
+        } else {
+            console.log(keys[i], req.body[keys[i]]);
         }
     }
 };
