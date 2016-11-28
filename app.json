@@ -3,5 +3,8 @@
   "description": "A MongoDB / NodeJS API to store data for student apps",
   "repository": "https://github.com/vanwars/mmart-api",
   "keywords": ["node", "express", "angular", "MEAN", "mongodb", "REST", "API"],
-  "addons": ["mongolab"]
+  "addons": ["mongolab"],
+    "scripts": {
+      "postinstall": "sudo apt-get install imagemagick"
+    }
 }

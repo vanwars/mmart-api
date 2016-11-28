@@ -2,7 +2,7 @@ exports.validateCreateUpdate = function (keys, req, res) {
     'use strict';
     var i;
     for (i = 0; i < keys.length; i++) {
-        if (!(req.body[keys[i]])) {
+        if (!req.body[keys[i]] || req.body[keys[i]].toString().length < 1) {
             req.handleError(res, "Invalid user input", "Must provide a " + keys[i] + ".", 400);
         }
     }
