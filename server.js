@@ -3,7 +3,7 @@ var bodyParser = require("body-parser");
 var mongodb = require("mongodb");
 var videos = require("./controllers/videos");
 var contacts = require("./controllers/contacts");
-var images = require("./controllers/images");
+var generic = require("./controllers/generic");
 
 var allowCrossDomain = function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -73,15 +73,15 @@ app.put(detailPaths, contacts.put);
 app.delete(detailPaths, contacts.delete);
 
 
-// Images + S3 Storage:
+// Generic, user-defined tables w/S3 & thumbnailing support:
 var multipart = require('connect-multiparty'),
     multipartMiddleware = multipart();
-detailPaths = ['/images/:id([0-9a-fA-F]+)/', '/:username/images/:id([0-9a-fA-F]+)/'];
-listPaths = ['/images/', '/:username/images/'];
-app.get(listPaths, multipartMiddleware, images.list);
-app.get(detailPaths, multipartMiddleware, images.get);
-app.post(listPaths, multipartMiddleware, images.post);
-app.delete(detailPaths, images.delete);
+detailPaths = ['/:username/:collection/:id([0-9a-fA-F]+)/'];
+listPaths = ['/:username/:collection/'];
+app.get(listPaths, multipartMiddleware, generic.list);
+app.get(detailPaths, multipartMiddleware, generic.get);
+app.post(listPaths, multipartMiddleware, generic.post);
+app.delete(detailPaths, generic.delete);
 
 
 

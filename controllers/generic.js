@@ -6,7 +6,6 @@
  */
 
 var helpers = require("../lib/helpers");
-var IMAGE_COLLECTION = "images";
 var mongodb = require("mongodb");
 var im = require('imagemagick');
 var ObjectID = mongodb.ObjectID;
@@ -22,7 +21,8 @@ var S3_BUCKET = process.env.AWS_S3_BUCKET,
 
 exports.list = function (req, res) {
     'use strict';
-    var query = {},
+    var COLLECTION = req.params.collection,
+        query = {},
         fields = ['username', 'description', 'genre'],
         i,
         field,
@@ -37,7 +37,7 @@ exports.list = function (req, res) {
     if (req.params.username) {
         query.username = req.params.username;
     }
-    req.db.collection(IMAGE_COLLECTION).find(query).toArray(function (err, docs) {
+    req.db.collection(COLLECTION).find(query).toArray(function (err, docs) {
         if (err) {
             req.handleError(res, err.message, "Failed to get images.");
         } else {
@@ -48,11 +48,11 @@ exports.list = function (req, res) {
 
 exports.post = function (req, res) {
     'use strict';
-    var requiredFields = ['username'],
+    var COLLECTION = req.params.collection,
+        requiredFields = ['username'],
         isValid,
         newImage = req.body;
-
-    console.log(req.files);
+    req.body.username = req.body.username || req.params.username;
 
     isValid = helpers.validateCreateUpdate(requiredFields, req, res);
     if (!isValid) {
@@ -124,7 +124,7 @@ exports.post = function (req, res) {
         function () {
             newImage.createDate = new Date();
             //finally, insert a new record:
-            req.db.collection(IMAGE_COLLECTION).insertOne(newImage, function (err, doc) {
+            req.db.collection(COLLECTION).insertOne(newImage, function (err, doc) {
                 if (err) {
                     req.handleError(res, err.message, "Failed to create new image.");
                 } else {
@@ -140,7 +140,8 @@ exports.post = function (req, res) {
 
 exports.get = function (req, res) {
     'use strict';
-    req.db.collection(IMAGE_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function (err, doc) {
+    var COLLECTION = req.params.collection;
+    req.db.collection(COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function (err, doc) {
         if (err) {
             req.handleError(res, err.message, "Failed to get image");
         } else {
@@ -151,11 +152,11 @@ exports.get = function (req, res) {
 
 exports.delete = function (req, res) {
     'use strict';
-    //var image;
+    var COLLECTION = req.params.collection;
     flow.exec(
         function () {
             // get image from database:
-            req.db.collection(IMAGE_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, this);
+            req.db.collection(COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, this);
         },
         function (err, record) {
             // store image in local variable or throw error:
@@ -207,7 +208,7 @@ exports.delete = function (req, res) {
             }
         },
         function () {
-            req.db.collection(IMAGE_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function (err, result) {
+            req.db.collection(COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function (err, result) {
                 if (err) {
                     req.handleError(res, err.message, "Failed to delete image from DB");
                 } else {
