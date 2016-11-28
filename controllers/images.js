@@ -116,7 +116,7 @@ var generateThumbnails = function (opts, callback) {
         },
         function (err, stdout, stderr) {
             if (err) {
-                req.handleError(res, err, "Failed to generate thumbnail.");
+                req.handleError(res, err, stdout + stderr + "Failed to generate thumbnail.");
             } else {
                 fs.readFile(thumb.file_path, this);
             }

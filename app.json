@@ -4,7 +4,7 @@
   "repository": "https://github.com/vanwars/mmart-api",
   "keywords": ["node", "express", "angular", "MEAN", "mongodb", "REST", "API"],
   "addons": ["mongolab"],
-    "scripts": {
+  "scripts": {
       "postinstall": "sudo apt-get install imagemagick"
-    }
+  }
 }
