@@ -11,6 +11,7 @@ var mongodb = require("mongodb");
 var im = require('imagemagick');
 var ObjectID = mongodb.ObjectID;
 var thumbnailer = require("../lib/thumbnailer");
+var fileHandler = require("../lib/fileHandler");
 
 // SEE: http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
 var S3_BUCKET = process.env.AWS_S3_BUCKET,
@@ -45,81 +46,96 @@ exports.list = function (req, res) {
     });
 };
 
-/*
-var deleteThumbnails = function (opts, callback) {
-    'use strict';
-    var s3 = new AWS.S3(),
-        req = opts.req,
-        res = opts.res,
-        image = opts.image,
-        thumb = image.images[opts.index];
-
-    //because of asynchronosity, this is a recursive function:
-    if (opts.index >= image.images.length) {
-        callback();
-        return; //exit the function
-    }
-
-    // if there are more thumbnails to delete, do it:
-    flow.exec(
-        function () {
-            // go and delete image from S3:
-            var params = {
-                Bucket: S3_BUCKET,
-                Key: thumb.key
-            };
-            s3.deleteObject(params, this);
-        },
-        function (err, data) {
-            // verify success or throw error:
-            if (err) {
-                console.log(err, err.stack);
-                req.handleError(res, err.stack, "Failed to delete image from S3");
-            } else {
-                console.log("image deleted:", data);
-                this();
-            }
-        },
-        function () {
-            //note: this is a recursive function:
-            ++opts.index;
-            deleteThumbnails(opts, callback);
-        }
-    );
-};
-*/
 exports.post = function (req, res) {
     'use strict';
     var requiredFields = ['username'],
-        isValid;
+        isValid,
+        newImage = req.body;
+
+    console.log(req.files);
 
     isValid = helpers.validateCreateUpdate(requiredFields, req, res);
     if (!isValid) {
         return;
     }
-    thumbnailer.generateThumbnails({
-        req: req,
-        res: res,
-        image: req.files.image,
-        index: 0
-    }, function (images) {
-        var newImage = req.body;
-        newImage.createDate = new Date();
-        if (images) {
-            newImage.images = images;
-        }
-        //if the S3 transfer was successful, insert a record:
-        req.db.collection(IMAGE_COLLECTION).insertOne(newImage, function (err, doc) {
-            if (err) {
-                req.handleError(res, err.message, "Failed to create new image.");
+    flow.exec(
+        // generate thumbnails and transfer to S3:
+        function () {
+            if (req.files.image) {
+                thumbnailer.generateThumbnails({
+                    req: req,
+                    res: res,
+                    image: req.files.image,
+                    index: 0
+                }, this);
             } else {
-                var d = doc.ops[0];
-                d.message = 'File uploaded to: S3';
-                console.log(doc.ops[0]);
-                res.status(201).json(d);
+                this();
             }
-        });
-    });
+        },
+        // append thumbnail data to JSON object:
+        function (images) {
+            if (images) {
+                newImage.image = {
+                    items: images,
+                    name: req.files.image.name
+                };
+            }
+            this();
+        },
+        // transfer audio to S3:
+        function () {
+            if (req.files.audio) {
+                fileHandler.transferFile({
+                    req: req,
+                    res: res,
+                    file: req.files.audio
+                }, this);
+            } else {
+                this();
+            }
+        },
+        // append audio data to JSON object:
+        function (audioData) {
+            if (audioData) {
+                newImage.audio = audioData;
+            }
+            this();
+        },
+        // transfer file to S3:
+        function () {
+            if (req.files.file) {
+                fileHandler.transferFile({
+                    req: req,
+                    res: res,
+                    file: req.files.file
+                }, this);
+            } else {
+                this();
+            }
+        },
+        // append file data data to JSON object:
+        function (fileData) {
+            if (fileData) {
+                newImage.file = fileData;
+            }
+            this();
+        },
+        // finally, save to database:
+        function () {
+            newImage.createDate = new Date();
+            //finally, insert a new record:
+            req.db.collection(IMAGE_COLLECTION).insertOne(newImage, function (err, doc) {
+                if (err) {
+                    req.handleError(res, err.message, "Failed to create new image.");
+                } else {
+                    var d = doc.ops[0];
+                    d.message = 'File uploaded to: S3';
+                    console.log(doc.ops[0]);
+                    res.status(201).json(d);
+                }
+            });
+        }
+    );
 };
 
 exports.get = function (req, res) {
@@ -144,7 +160,7 @@ exports.delete = function (req, res) {
         function (err, record) {
             // store image in local variable or throw error:
             if (err) {
-                req.handleError(res, err.message, "Failed to get image");
+                req.handleError(res, err.message, "Failed to get record");
             } else {
                 console.log(record);
                 //image = record;
@@ -152,12 +168,43 @@ exports.delete = function (req, res) {
             }
         },
         function (record) {
-            thumbnailer.deleteThumbnails({
-                req: req,
-                res: res,
-                record: record,
-                index: 0
-            }, this);
+            if (record.image) {
+                //remove thumbnails from S3
+                thumbnailer.deleteThumbnails({
+                    req: req,
+                    res: res,
+                    record: record,
+                    index: 0
+                }, this);
+            } else {
+                this(record);
+            }
+        },
+        function (record) {
+            if (record.audio) {
+                //remove audio file from S3
+                fileHandler.deleteFile({
+                    req: req,
+                    res: res,
+                    key: record.audio.key,
+                    record: record
+                }, this);
+            } else {
+                this(record);
+            }
+        },
+        function (record) {
+            if (record.file) {
+                //remove audio file from S3
+                fileHandler.deleteFile({
+                    req: req,
+                    res: res,
+                    key: record.file.key,
+                    record: record
+                }, this);
+            } else {
+                this(record);
+            }
         },
         function () {
             req.db.collection(IMAGE_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function (err, result) {
