@@ -5,6 +5,11 @@
  * AWS_SECRET_ACCESS_KEY
  */
 
+
+/* TODO:
+ * Custom collections have a username prefix, e.g.: vanwars_images
+ * Create /endpoints/ listing w/list of all collections in DB.
+ */
 var helpers = require("../lib/helpers");
 var mongodb = require("mongodb");
 var im = require('imagemagick');
@@ -61,7 +66,7 @@ exports.post = function (req, res) {
     flow.exec(
         // generate thumbnails and transfer to S3:
         function () {
-            if (req.files.image) {
+            if (req.files && req.files.image) {
                 thumbnailer.generateThumbnails({
                     req: req,
                     res: res,
@@ -77,14 +82,14 @@ exports.post = function (req, res) {
             if (images) {
                 newImage.image = {
                     items: images,
-                    name: req.files.image.name
+                    original_file_name: req.files.image.name
                 };
             }
             this();
         },
         // transfer audio to S3:
         function () {
-            if (req.files.audio) {
+            if (req.files && req.files.audio) {
                 fileHandler.transferFile({
                     req: req,
                     res: res,
@@ -103,7 +108,7 @@ exports.post = function (req, res) {
         },
         // transfer file to S3:
         function () {
-            if (req.files.file) {
+            if (req.files && req.files.file) {
                 fileHandler.transferFile({
                     req: req,
                     res: res,
