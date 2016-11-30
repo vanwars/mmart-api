@@ -27,21 +27,12 @@ var S3_BUCKET = process.env.AWS_S3_BUCKET,
 exports.list = function (req, res) {
     'use strict';
     var COLLECTION = req.params.collection,
-        query = req.query;
-        /*fields = ['username', 'description', 'genre'],
-        i,
-        field,
-        val;
-    for (i = 0; i < fields.length; i++) {
-        field = fields[i];
-        val = req.query[field];
-        if (val) {
-            query[field] = val;
-        }
+        query = req.query,
+        key;
+    // convert to case-insensitive 'like' query using regex:
+    for (key in query) {
+        query[key] = new RegExp(query[key], "ig");
     }
-    if (req.params.username) {
-        query.username = req.params.username;
-    }*/
     req.db.collection(COLLECTION).find(query).toArray(function (err, docs) {
         if (err) {
             req.handleError(res, err.message, "Failed to get images.");
