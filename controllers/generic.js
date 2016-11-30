@@ -134,7 +134,7 @@ exports.post = function (req, res) {
                     req.handleError(res, err.message, "Failed to create new image.");
                 } else {
                     var d = doc.ops[0];
-                    d.message = 'File uploaded to: S3';
+                    d.message = 'Resource successfully created';
                     console.log(doc.ops[0]);
                     res.status(201).json(d);
                 }
@@ -148,7 +148,7 @@ exports.get = function (req, res) {
     var COLLECTION = req.params.collection;
     req.db.collection(COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function (err, doc) {
         if (err) {
-            req.handleError(res, err.message, "Failed to get image");
+            req.handleError(res, err.message, "Failed to find the requested resource");
         } else {
             res.status(200).json(doc);
         }
@@ -166,7 +166,7 @@ exports.delete = function (req, res) {
         function (err, record) {
             // store image in local variable or throw error:
             if (err) {
-                req.handleError(res, err.message, "Failed to get record");
+                req.handleError(res, err.message, "Failed to delete the requested resource");
             } else {
                 console.log(record);
                 //image = record;
@@ -215,7 +215,7 @@ exports.delete = function (req, res) {
         function () {
             req.db.collection(COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function (err, result) {
                 if (err) {
-                    req.handleError(res, err.message, "Failed to delete image from DB");
+                    req.handleError(res, err.message, "Failed to delete the requested resource");
                 } else {
                     res.status(204).json(result).end();
                 }
