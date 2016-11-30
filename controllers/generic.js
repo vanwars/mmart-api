@@ -28,8 +28,10 @@ exports.list = function (req, res) {
     'use strict';
     var COLLECTION = req.params.collection,
         query = req.params;
-    req.handleError(res, req.params, req.params);
-    console.log(req.params);
+    delete query.username;
+    delete query.collection;
+    //req.handleError(res, req.params, req.params);
+    //console.log(req.params);
         /*fields = ['username', 'description', 'genre'],
         i,
         field,
