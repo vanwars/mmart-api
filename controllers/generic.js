@@ -30,7 +30,7 @@ exports.list = function (req, res) {
         query = req.params;
     delete query.username;
     delete query.collection;
-    //req.handleError(res, req.params, req.params);
+    req.handleError(res, req.params, req.params);
     //console.log(req.params);
         /*fields = ['username', 'description', 'genre'],
         i,
