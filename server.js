@@ -81,6 +81,7 @@ listPaths = ['/:username/:collection/'];
 app.get(listPaths, multipartMiddleware, generic.list);
 app.get(detailPaths, multipartMiddleware, generic.get);
 app.post(listPaths, multipartMiddleware, generic.post);
+app.post(detailPaths, multipartMiddleware, generic.put);
 app.delete(detailPaths, generic.delete);
 
 

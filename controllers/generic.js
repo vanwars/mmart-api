@@ -155,6 +155,21 @@ exports.get = function (req, res) {
     });
 };
 
+exports.put = function (req, res) {
+    'use strict';
+    var COLLECTION = req.params.collection;
+    var updateDoc = req.body;
+    delete updateDoc._id;
+
+    req.db.collection(COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function (err, doc) {
+        if (err) {
+            req.handleError(res, err.message, "Failed to update resource");
+        } else {
+            res.status(204).end();
+        }
+    });
+};
+
 exports.delete = function (req, res) {
     'use strict';
     var COLLECTION = req.params.collection;
