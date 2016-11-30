@@ -27,9 +27,9 @@ var S3_BUCKET = process.env.AWS_S3_BUCKET,
 exports.list = function (req, res) {
     'use strict';
     var COLLECTION = req.params.collection,
-        query = req.params;
-    delete query.username;
-    delete query.collection;
+        query = req.query;
+    //delete query.username;
+    //delete query.collection;
     res.status(200).json(query);
     return;
     //req.handleError(res, query, query);
