@@ -57,6 +57,9 @@ exports.post = function (req, res) {
         requiredFields = ['username'],
         isValid,
         newImage = req.body;
+    // ensure if someone accidentally posts an _id, that it doesn't
+    // interfere w/MongoDB's indexing system. Delete _id from dictionary:
+    delete req.body._id;
     req.body.username = req.body.username || req.params.username;
 
     isValid = helpers.validateCreateUpdate(requiredFields, req, res);
@@ -131,7 +134,7 @@ exports.post = function (req, res) {
             //finally, insert a new record:
             req.db.collection(COLLECTION).insertOne(newImage, function (err, doc) {
                 if (err) {
-                    req.handleError(res, err.message, "Failed to create new image.");
+                    req.handleError(res, err.message, "Failed to create new resource.");
                 } else {
                     var d = doc.ops[0];
                     d.message = 'Resource successfully created';
@@ -150,6 +153,7 @@ exports.get = function (req, res) {
         if (err) {
             req.handleError(res, err.message, "Failed to find the requested resource");
         } else {
+            console.log("Retrieved one:", doc);
             res.status(200).json(doc);
         }
     });
@@ -157,15 +161,18 @@ exports.get = function (req, res) {
 
 exports.put = function (req, res) {
     'use strict';
-    var COLLECTION = req.params.collection;
-    var updateDoc = req.body;
+    var COLLECTION = req.params.collection,
+        updateDoc = req.body,
+        d;
     delete updateDoc._id;
 
     req.db.collection(COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function (err, doc) {
         if (err) {
             req.handleError(res, err.message, "Failed to update resource");
         } else {
-            res.status(204).end();
+            console.log("UPDATED DOC:", d);
+            d = doc;
+            res.status(204).json(d);
         }
     });
 };
@@ -173,15 +180,19 @@ exports.put = function (req, res) {
 exports.delete = function (req, res) {
     'use strict';
     var COLLECTION = req.params.collection;
+    console.log(req.params.id, req.params.collection);
     flow.exec(
         function () {
             // get image from database:
             req.db.collection(COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, this);
+            //req.db.collection(COLLECTION).findOne({"_id" : new ObjectID("583e4736afabfc00104b9ace")}, this);
         },
         function (err, record) {
             // store image in local variable or throw error:
             if (err) {
                 req.handleError(res, err.message, "Failed to delete the requested resource");
+            } else if (!record) {
+                req.handleError(res, null, "Failed to locate the requested resource");
             } else {
                 console.log(record);
                 //image = record;
@@ -237,4 +248,16 @@ exports.delete = function (req, res) {
             });
         }
     );
+};
+
+exports.deleteAll = function (req, res) {
+    'use strict';
+    var COLLECTION = req.params.collection;
+    req.db.collection(COLLECTION).deleteMany({}, function (err, result) {
+        if (err) {
+            req.handleError(res, err.message, "Failed to delete the requested resource");
+        } else {
+            res.status(204).json(result).end();
+        }
+    });
 };
