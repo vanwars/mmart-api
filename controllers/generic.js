@@ -22,11 +22,15 @@ var S3_BUCKET = process.env.AWS_S3_BUCKET,
     fs = require('fs'),
     AWS = require('aws-sdk'),
     fs = require('fs'),
-    flow = require('flow');
+    flow = require('flow'),
+    getCollection = function (params) {
+        'use strict';
+        return params.username + "_" + params.collection;
+    };
 
 exports.list = function (req, res) {
     'use strict';
-    var COLLECTION = req.params.collection,
+    var COLLECTION = getCollection(req.params),
         query = req.query,
         key;
     // convert to case-insensitive 'like' query using regex:
@@ -44,7 +48,7 @@ exports.list = function (req, res) {
 
 exports.post = function (req, res) {
     'use strict';
-    var COLLECTION = req.params.collection,
+    var COLLECTION = getCollection(req.params),
         requiredFields = ['username'],
         isValid,
         newImage = req.body;
@@ -139,7 +143,7 @@ exports.post = function (req, res) {
 
 exports.get = function (req, res) {
     'use strict';
-    var COLLECTION = req.params.collection;
+    var COLLECTION = getCollection(req.params);
     req.db.collection(COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function (err, doc) {
         if (err) {
             req.handleError(res, err.message, "Failed to find the requested resource");
@@ -152,7 +156,7 @@ exports.get = function (req, res) {
 
 exports.put = function (req, res) {
     'use strict';
-    var COLLECTION = req.params.collection,
+    var COLLECTION = getCollection(req.params),
         updateDoc = req.body,
         d;
     delete updateDoc._id;
@@ -170,7 +174,7 @@ exports.put = function (req, res) {
 
 exports.delete = function (req, res) {
     'use strict';
-    var COLLECTION = req.params.collection;
+    var COLLECTION = getCollection(req.params);
     console.log(req.params.id, req.params.collection);
     flow.exec(
         function () {
@@ -243,7 +247,7 @@ exports.delete = function (req, res) {
 
 exports.deleteAll = function (req, res) {
     'use strict';
-    var COLLECTION = req.params.collection;
+    var COLLECTION = getCollection(req.params);
     req.db.collection(COLLECTION).deleteMany({}, function (err, result) {
         if (err) {
             req.handleError(res, err.message, "Failed to delete the requested resource");
