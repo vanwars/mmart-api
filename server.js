@@ -14,7 +14,7 @@ var allowCrossDomain = function (req, res, next) {
 var app = express();
 module.exports = app;
 app.use(allowCrossDomain);
-app.use(express.static(__dirname + "/public"));
+//app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
 
 // Create a database variable outside of the database connection callback to reuse the connection pool in your app.
