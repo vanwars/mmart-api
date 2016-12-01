@@ -191,7 +191,7 @@ exports.delete = function (req, res) {
             }
         },
         function (record) {
-            if (record.image) {
+            if (record.image && record.image.items) {
                 //remove thumbnails from S3
                 thumbnailer.deleteThumbnails({
                     req: req,
