@@ -1,0 +1,29 @@
+<div class = "row">
+  <div class="col-md-6">
+    <h2>
+      {{ artist.name }}
+    </h2>
+  </div>
+  <div class="col-md-3">
+  </div>
+  <div class="col-md-2">
+    <a href="#/"><button style="margin-top:20px" class="btn btn-default" ng-click="deleteArtist(artist._id)">Delete</button></a>
+  </div>
+  <div class="col-md-1">
+  </div>
+</div>
+<div ng-hide="editMode" class="container">
+  <div>
+    <p ng-if="artist.dob">{{ artist.dob }}</p>
+    <p ng-if="artist.genre">genre: {{ artist.genre }} </p>
+    <p ng-if="artist.birthplace">{{ artist.birthplace }} </p>
+    <p ng-if="artist.image"><img ng-src="{{ artist.image.items[2].file_path }}" /></p>
+    <p>
+      <button style="margin-top:20px" class="btn btn-default" ng-click="toggleEdit()">Edit</button>
+      <a style="margin-top:20px" class="btn btn-default" href="#/">Back</a>
+    </p>
+  </div>
+</div>
+<!-- Artist form -->
+<div ng-include="artistFormUrl">
+</div>
