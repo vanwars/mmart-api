@@ -14,7 +14,7 @@ var allowCrossDomain = function (req, res, next) {
 var app = express();
 module.exports = app;
 app.use(allowCrossDomain);
-//app.use(express.static(__dirname + "/public"));
+app.use('/samples', express.static(__dirname + "/samples"));
 app.use(bodyParser.json());
 
 // Create a database variable outside of the database connection callback to reuse the connection pool in your app.
@@ -64,13 +64,13 @@ app.put(detailPaths, videos.put);
 app.delete(detailPaths, videos.delete);
 
 // Contacts
-detailPaths = ['/contacts/:id([0-9a-fA-F]+)/', '/:username/contacts/:id([0-9a-fA-F]+)/'];
-listPaths = ['/contacts/', '/:username/contacts/'];
-app.get(detailPaths, contacts.get);
-app.get(listPaths, contacts.list);
-app.post(listPaths, contacts.post);
-app.put(detailPaths, contacts.put);
-app.delete(detailPaths, contacts.delete);
+//detailPaths = ['/contacts/:id([0-9a-fA-F]+)/', '/:username/contacts/:id([0-9a-fA-F]+)/'];
+//listPaths = ['/contacts/', '/:username/contacts/'];
+//app.get(detailPaths, contacts.get);
+//app.get(listPaths, contacts.list);
+//app.post(listPaths, contacts.post);
+//app.put(detailPaths, contacts.put);
+//app.delete(detailPaths, contacts.delete);
 
 
 // Generic, user-defined tables w/S3 & thumbnailing support:
