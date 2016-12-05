@@ -1,4 +1,4 @@
-var app = angular.module("artistsApp", ['ngRoute']);
+var app = angular.module("modelsApp", ['ngRoute']);
 
 //add router:
 app.config(function ($routeProvider) {
@@ -8,17 +8,18 @@ app.config(function ($routeProvider) {
             templateUrl: "list.html",
             controller: "ListController",
             resolve: {
-                artists: function (Artists) {
-                    return Artists.getArtists();
+                models: function (Models) {
+                    console.log('fetch models...');
+                    return Models.getModels();
                 }
             }
         })
         .when("/new/artist", {
-            controller: "NewArtistController",
+            controller: "NewModelController",
             templateUrl: "artist-form.html"
         })
-        .when("/artist/:artistId", {
-            controller: "EditArtistController",
+        .when("/artist/:modelId", {
+            controller: "EditModelController",
             templateUrl: "artist.html"
         })
         .otherwise({
@@ -29,19 +30,21 @@ app.config(function ($routeProvider) {
 // All of the methods contained within the service method
 // are in charge of getting, posting, putting, and deleting
 // resources from the server:
-app.service("Artists", function ($http) {
+app.service("Models", function ($http) {
     'use strict';
     this.url = "/vanwars/artists/";
-    this.getArtists = function () {
+    this.getModels = function () {
+        console.log('fetch models...');
         return $http.get(this.url).
             then(function (response) {
+                console.log(response);
                 return response;
             }, function (response) {
                 console.log(response);
-                alert("Error finding artists.");
+                alert("Error finding models.");
             });
     };
-    this.createArtist = function (artist) {
+    this.createModel = function (model) {
         var image = document.getElementById("image").files[0],
             fd = new FormData(),
             metadata = {
@@ -49,83 +52,90 @@ app.service("Artists", function ($http) {
                 transformRequest: angular.identity
             };
         fd.append("image", image);
-        fd.append("name", artist.name);
-        fd.append("genre", artist.genre);
-        fd.append("dob", artist.dob);
-        fd.append("dob", artist.birthplace);
+        fd.append("name", model.name);
+        fd.append("genre", model.genre);
+        fd.append("birthplace", model.birthplace);
+
+        //some special logic for handling dates:
+        var dob = Date.parse(model.dob);
+        if (dob !== 'invalid date' && !isNaN(dob)) {
+            fd.append("dob", dob);
+        }
+
+        //save to API with POST request:
         return $http.post(this.url, fd, metadata).
             then(function (response) {
                 return response;
             }, function (response) {
                 console.log(response);
-                alert("Error creating artist.");
+                alert("Error creating model.");
             });
     };
-    this.getArtist = function (artistId) {
-        var url = this.url + artistId;
+    this.getModel = function (modelId) {
+        var url = this.url + modelId;
         return $http.get(url).
             then(function (response) {
                 return response;
             }, function (response) {
                 console.log(response);
-                alert("Error finding this artist.");
+                alert("Error finding this model.");
             });
     };
-    this.editArtist = function (artist) {
-        var url = this.url + artist._id;
-        console.log(artist._id);
-        return $http.put(url, artist).
+    this.editModel = function (model) {
+        var url = this.url + model._id;
+        console.log(model._id);
+        return $http.put(url, model).
             then(function (response) {
                 return response;
             }, function (response) {
-                alert("Error editing this artist.");
+                alert("Error editing this model.");
                 console.log(response);
             });
     };
-    this.deleteArtist = function (artistId) {
-        var url = this.url + artistId;
+    this.deleteModel = function (modelId) {
+        var url = this.url + modelId;
         return $http.delete(url).
             then(function (response) {
                 return response;
             }, function (response) {
-                alert("Error deleting this artist.");
+                alert("Error deleting this model.");
                 console.log(response);
             });
     };
 });
 
 //add controllers:
-app.controller("ListController", function (artists, $scope) {
+app.controller("ListController", function (models, $scope) {
     'use strict';
-    $scope.artists = artists.data;
+    $scope.models = models.data;
 });
 
-//add create artist controller:
-app.controller("NewArtistController", function ($scope, $location, Artists) {
+//add create model controller:
+app.controller("NewModelController", function ($scope, $location, Models) {
     'use strict';
-    $scope.url = "/vanwars/artists/";
+    $scope.url = "/vanwars/models/";
     $scope.back = function () {
         $location.path("#/");
     };
 
-    $scope.saveArtist = function (artist) {
-        console.log(artist);
-        Artists.createArtist(artist).then(function (doc) {
-            var artistUrl = $scope.url + doc.data._id;
-            $location.path(artistUrl);
+    $scope.saveModel = function (model) {
+        console.log(model);
+        Models.createModel(model).then(function (doc) {
+            var modelUrl = $scope.url + doc.data._id;
+            $location.path(modelUrl);
         }, function (response) {
             alert(response);
         });
     };
 });
 
-//add edit artist controller:
-app.controller("EditArtistController", function ($scope, $routeParams, Artists) {
+//add edit model controller:
+app.controller("EditModelController", function ($scope, $routeParams, Models) {
     'use strict';
-    Artists.getArtist($routeParams.artistId).then(function (doc) {
-        $scope.artist = doc.data;
-        if ($scope.artist.dob) {
-            $scope.artist.dob = new Date($scope.artist.dob);
+    Models.getModel($routeParams.modelId).then(function (doc) {
+        $scope.model = doc.data;
+        if ($scope.model.dob) {
+            $scope.model.dob = new Date($scope.model.dob);
         }
     }, function (response) {
         alert(response);
@@ -133,21 +143,25 @@ app.controller("EditArtistController", function ($scope, $routeParams, Artists) 
 
     $scope.toggleEdit = function () {
         $scope.editMode = true;
-        $scope.artistFormUrl = "artist-form.html";
+        $scope.modelFormUrl = "artist-form.html";
     };
 
     $scope.back = function () {
         $scope.editMode = false;
-        $scope.artistFormUrl = "";
+        $scope.modelFormUrl = "";
     };
 
-    $scope.saveArtist = function (artist) {
-        Artists.editArtist(artist);
+    $scope.saveModel = function (model) {
+        Models.editModel(model);
         $scope.editMode = false;
-        $scope.artistFormUrl = "";
+        $scope.modelFormUrl = "";
     };
 
-    $scope.deleteArtist = function (artistId) {
-        Artists.deleteArtist(artistId);
+    $scope.deleteModel = function (modelId) {
+        Models.deleteModel(modelId).then(function () {
+            // once the model has been deleted, redirect to the
+            // list page:
+            window.location = "#/";
+        });
     };
 });

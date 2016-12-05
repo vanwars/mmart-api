@@ -1,25 +1,24 @@
-<div class = "row">
-  <div class="col-md-6">
-    <h2>
-      Artists
-    </h2>
-  </div>
-  <div class="col-md-3">
-  </div>
-  <div class="col-md-2">
-    <a style="margin-top:20px" class="btn btn-default" href="#/new/artist">New</a>
-  </div>
-  <div class="col-md-1">
-  </div>
-</div>
 <div class="container">
-  <table class="table table-hover">
-    <tbody>
-      <tr ng-repeat="artist in artists | orderBy:'name'" style="cursor:pointer">
-        <td>
-          <a ng-href="#/artist/{{artist._id}}">{{ artist.name }}</a>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <div class = "row">
+        <div class="col-md-12">
+            <h2>
+                Artists
+                <a style="float:right;" class="btn btn-default" href="#/new/artist">
+                    <i class="fa fa-plus"></i> Add New
+                </a>
+            </h2>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <tbody>
+            <tr ng-repeat="model in models | orderBy: 'name'" style="cursor:pointer">
+                <td>
+                    <a ng-href="#/artist/{{model._id}}">
+                        <img ng-if="model.image" ng-src="{{ model.image.items[3].file_path }}" />
+                        {{ model.name }}
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>

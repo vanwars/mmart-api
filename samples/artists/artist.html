@@ -1,29 +1,24 @@
 <div class = "row">
-  <div class="col-md-6">
-    <h2>
-      {{ artist.name }}
-    </h2>
-  </div>
-  <div class="col-md-3">
-  </div>
-  <div class="col-md-2">
-    <a href="#/"><button style="margin-top:20px" class="btn btn-default" ng-click="deleteArtist(artist._id)">Delete</button></a>
-  </div>
-  <div class="col-md-1">
-  </div>
+    <div class="col-md-6">
+        <h2>
+            {{ model.name }}
+            <a style="float:right;" class="btn btn-default" href="#/">
+                Back
+            </a>
+        </h2>
+    </div>
 </div>
 <div ng-hide="editMode" class="container">
-  <div>
-    <p ng-if="artist.dob">{{ artist.dob }}</p>
-    <p ng-if="artist.genre">genre: {{ artist.genre }} </p>
-    <p ng-if="artist.birthplace">{{ artist.birthplace }} </p>
-    <p ng-if="artist.image"><img ng-src="{{ artist.image.items[2].file_path }}" /></p>
-    <p>
-      <button style="margin-top:20px" class="btn btn-default" ng-click="toggleEdit()">Edit</button>
-      <a style="margin-top:20px" class="btn btn-default" href="#/">Back</a>
-    </p>
-  </div>
+    <div>
+        <p>{{ model.name }}
+        <a ng-click="toggleEdit()"><i class="fa fa-edit"></i></a>
+        <a ng-click="deleteModel(model._id)"><i class="fa fa-trash"></i></a>
+        </p>
+        <p ng-if="model.dob">{{ model.dob | date : format : timezone }}</p>
+        <p ng-if="model.genre">genre: {{ model.genre }} </p>
+        <p ng-if="model.birthplace">{{ model.birthplace }} </p>
+        <img ng-if="model.image" ng-src="{{ model.image.items[2].file_path }}" />
+    </div>
 </div>
-<!-- Artist form -->
-<div ng-include="artistFormUrl">
-</div>
+<!-- Model form -->
+<div ng-include="modelFormUrl">
