@@ -1,4 +1,5 @@
 var express = require("express");
+var serveIndex = require('serve-index');
 var bodyParser = require("body-parser");
 var mongodb = require("mongodb");
 var videos = require("./controllers/videos");
@@ -15,6 +16,7 @@ var app = express();
 module.exports = app;
 app.use(allowCrossDomain);
 app.use('/samples', express.static(__dirname + "/samples"));
+app.use('/samples', serveIndex(__dirname + "/samples"));
 app.use(bodyParser.json());
 
 // Create a database variable outside of the database connection callback to reuse the connection pool in your app.

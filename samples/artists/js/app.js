@@ -1,5 +1,5 @@
 var app = angular.module("modelsApp", ['ngRoute']);
-
+var adminMode = true;
 //add router:
 app.config(function ($routeProvider) {
     'use strict';
@@ -16,11 +16,11 @@ app.config(function ($routeProvider) {
         })
         .when("/new/artist", {
             controller: "NewModelController",
-            templateUrl: "artist-form.html"
+            templateUrl: "detail-form.html"
         })
         .when("/artist/:modelId", {
             controller: "EditModelController",
-            templateUrl: "artist.html"
+            templateUrl: "detail.html"
         })
         .otherwise({
             redirectTo: "/"
@@ -33,8 +33,9 @@ app.config(function ($routeProvider) {
 app.service("Models", function ($http) {
     'use strict';
     this.url = "/vanwars/artists/";
+
+    //this method gets all of the models from your endpoint:
     this.getModels = function () {
-        console.log('fetch models...');
         return $http.get(this.url).
             then(function (response) {
                 console.log(response);
@@ -44,6 +45,8 @@ app.service("Models", function ($http) {
                 alert("Error finding models.");
             });
     };
+
+    //this method creates a new model using POST:
     this.createModel = function (model) {
         var image = document.getElementById("image").files[0],
             fd = new FormData(),
@@ -71,6 +74,8 @@ app.service("Models", function ($http) {
                 alert("Error creating model.");
             });
     };
+
+    // This method gets a single model, based on the model's _id:
     this.getModel = function (modelId) {
         var url = this.url + modelId;
         return $http.get(url).
@@ -81,7 +86,9 @@ app.service("Models", function ($http) {
                 alert("Error finding this model.");
             });
     };
-    this.editModel = function (model) {
+
+    // This method updates a model:
+    this.updateModel = function (model) {
         var url = this.url + model._id;
         console.log(model._id);
         return $http.put(url, model).
@@ -92,6 +99,8 @@ app.service("Models", function ($http) {
                 console.log(response);
             });
     };
+
+    // This method deletes a model:
     this.deleteModel = function (modelId) {
         var url = this.url + modelId;
         return $http.delete(url).
@@ -107,22 +116,22 @@ app.service("Models", function ($http) {
 //add controllers:
 app.controller("ListController", function (models, $scope) {
     'use strict';
+    $scope.adminMode = adminMode;
     $scope.models = models.data;
 });
 
 //add create model controller:
 app.controller("NewModelController", function ($scope, $location, Models) {
     'use strict';
-    $scope.url = "/vanwars/models/";
+    $scope.adminMode = adminMode;
     $scope.back = function () {
         $location.path("#/");
     };
 
     $scope.saveModel = function (model) {
-        console.log(model);
         Models.createModel(model).then(function (doc) {
-            var modelUrl = $scope.url + doc.data._id;
-            $location.path(modelUrl);
+            console.log(doc);
+            $location.path("#/");
         }, function (response) {
             alert(response);
         });
@@ -132,18 +141,21 @@ app.controller("NewModelController", function ($scope, $location, Models) {
 //add edit model controller:
 app.controller("EditModelController", function ($scope, $routeParams, Models) {
     'use strict';
-    Models.getModel($routeParams.modelId).then(function (doc) {
-        $scope.model = doc.data;
-        if ($scope.model.dob) {
-            $scope.model.dob = new Date($scope.model.dob);
-        }
-    }, function (response) {
-        alert(response);
-    });
+    $scope.adminMode = adminMode;
+    $scope.initialize = function () {
+        Models.getModel($routeParams.modelId).then(function (doc) {
+            $scope.model = doc.data;
+            if ($scope.model.dob) {
+                $scope.model.dob = new Date($scope.model.dob);
+            }
+        }, function (response) {
+            alert(response);
+        });
+    };
 
     $scope.toggleEdit = function () {
         $scope.editMode = true;
-        $scope.modelFormUrl = "artist-form.html";
+        $scope.modelFormUrl = "detail-form.html";
     };
 
     $scope.back = function () {
@@ -152,7 +164,7 @@ app.controller("EditModelController", function ($scope, $routeParams, Models) {
     };
 
     $scope.saveModel = function (model) {
-        Models.editModel(model);
+        Models.updateModel(model);
         $scope.editMode = false;
         $scope.modelFormUrl = "";
     };
@@ -164,4 +176,7 @@ app.controller("EditModelController", function ($scope, $routeParams, Models) {
             window.location = "#/";
         });
     };
+
+    //call the initialize method:
+    $scope.initialize();
 });
