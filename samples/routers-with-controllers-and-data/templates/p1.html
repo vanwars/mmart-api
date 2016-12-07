@@ -1,0 +1,10 @@
+<div class="screen panel1">
+    <h2>{{ title }}</h2>
+    <i class="fa fa-5x {{ icon }}"></i>
+    <div ng-repeat="artist in artists">
+        <a ng-href="#/panel2">
+            <img ng-if="artist.image" ng-src="{{ artist.image.items[2].file_path }}" />
+        </a>
+    </div>
+    
+</div>

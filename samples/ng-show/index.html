@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="modelsApp" ng-controller="myController">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#/" ng-click="showPanel1($event)">Panel 1</a></li>
+                        <li><a href="#/" ng-click="showPanel2($event)">Panel 2</a></li>
+                        <li><a href="#/" ng-click="showPanel3($event)">Panel 3</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <!-- Here, Angular is showing and hiding panels
+                 using the ng-show directive in combination
+                 with the scope variables p1, p2, and p3
+            -->
+            <div class="screen panel1" ng-show="p1">
+                <h2>Panel 1</h2>
+                <i class="fa fa-5x fa-heart"></i>
+            </div>
+            <div class="screen panel2" ng-show="p2">
+                <h2>Panel 2</h2>
+                <i class="fa fa-5x fa-beer"></i>
+            </div>
+            <div class="screen panel3" ng-show="p3">
+                <h2>Panel 3</h2>
+                <i class="fa fa-5x fa-star"></i>
+            </div>
+        </div>
+        
+        <!-- JavaScript dependencies -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"></script>
+        
+        <!-- Your app -->
+        <script src="js/app.js"></script>
+    </body>
+</html>

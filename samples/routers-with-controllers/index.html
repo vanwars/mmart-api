@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top" ng-controller="topController">
+            <div class="container">
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#panel1" ng-click="highlight($event)">Panel 1</a></li>
+                        <li><a href="#panel2" ng-click="highlight($event)">Panel 2</a></li>
+                        <li><a href="#panel3" ng-click="highlight($event)">Panel 3</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <h1>Using Routers</h1>
+            <div ng-view>
+                <!-- All of your HTML templates will be injected here -->
+            </div>
+        </div>
+        
+        <!-- JavaScript dependencies -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+        <!-- Your app -->
+        <script src="js/app.js"></script>
+    </body>
+</html>

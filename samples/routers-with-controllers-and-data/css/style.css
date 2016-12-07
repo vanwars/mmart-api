@@ -1,0 +1,33 @@
+body {
+    padding-top: 70px;
+}
+.back, .back:active, .back:visited, .back:hover {
+    background: #15c !important;
+    color: white !important;
+    margin-right: 20px;
+}
+
+.screen {
+    display: block;
+    margin: auto;
+    padding: 10px;
+    min-height: 300px;
+    text-align: center;
+}
+.screen > i {
+    line-height: 180px;
+}
+
+.panel1 {
+    background: pink;
+}
+.panel2 {
+    background: teal;
+}
+.panel3 {
+    background: lightblue;
+}
+
+img {
+    margin-bottom: 10px;
+}

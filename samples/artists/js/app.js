@@ -32,7 +32,7 @@ app.config(function ($routeProvider) {
 // resources from the server:
 app.service("Models", function ($http) {
     'use strict';
-    this.url = "/vanwars/artists/";
+    this.url = "https://mmart162-api.herokuapp.com/vanwars/artists/";
 
     //this method gets all of the models from your endpoint:
     this.getModels = function () {
@@ -103,6 +103,10 @@ app.service("Models", function ($http) {
     // This method deletes a model:
     this.deleteModel = function (modelId) {
         var url = this.url + modelId;
+        var areYouSure = confirm("Are you sure you want to delete this model?");
+        if (!areYouSure) {
+            return;
+        }
         return $http.delete(url).
             then(function (response) {
                 return response;
