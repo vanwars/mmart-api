@@ -1,25 +1,20 @@
 var app = angular.module("modelsApp", ['ngRoute']);
-var adminMode = true;
+var adminMode = false;
+var url = "https://mmart162-api.herokuapp.com/vanwars/artists/";
 //add router:
 app.config(function ($routeProvider) {
     'use strict';
     $routeProvider
         .when("/", {
             templateUrl: "list.html",
-            controller: "ListController",
-            resolve: {
-                models: function (Models) {
-                    console.log('fetch models...');
-                    return Models.getModels();
-                }
-            }
+            controller: "ListArtistController"
         })
         .when("/new/artist", {
-            controller: "NewModelController",
+            controller: "CreateArtistController",
             templateUrl: "detail-form.html"
         })
         .when("/artist/:modelId", {
-            controller: "EditModelController",
+            controller: "EditArtistController",
             templateUrl: "detail.html"
         })
         .otherwise({
@@ -27,33 +22,40 @@ app.config(function ($routeProvider) {
         });
 });
 
-// All of the methods contained within the service method
-// are in charge of getting, posting, putting, and deleting
-// resources from the server:
-app.service("Models", function ($http) {
+//add controllers:
+app.controller("ListArtistController", function ($scope, $http) {
     'use strict';
-    this.url = "https://mmart162-api.herokuapp.com/vanwars/artists/";
-
-    //this method gets all of the models from your endpoint:
-    this.getModels = function () {
-        return $http.get(this.url).
+    $scope.adminMode = adminMode;
+    $scope.url = url;
+    $scope.getModels = function () {
+        return $http.get($scope.url).
             then(function (response) {
                 console.log(response);
-                return response;
+                $scope.models = response.data;
             }, function (response) {
                 console.log(response);
                 alert("Error finding models.");
             });
     };
+    $scope.getModels();
+});
 
-    //this method creates a new model using POST:
-    this.createModel = function (model) {
-        var image = document.getElementById("image").files[0],
-            fd = new FormData(),
-            metadata = {
-                headers: { 'Content-Type': undefined },
-                transformRequest: angular.identity
-            };
+//add create model controller:
+app.controller("CreateArtistController", function ($scope, $location, $http) {
+    'use strict';
+    $scope.adminMode = adminMode;
+    $scope.url = url;
+    $scope.back = function () {
+        $location.path("#/");
+    };
+
+    $scope.createModel = function (model) {
+        var image = document.getElementById("image").files[0];
+        var fd = new FormData();
+        var metadata = {
+            headers: { 'Content-Type': undefined },
+            transformRequest: angular.identity
+        };
         fd.append("image", image);
         fd.append("name", model.name);
         fd.append("genre", model.genre);
@@ -66,95 +68,34 @@ app.service("Models", function ($http) {
         }
 
         //save to API with POST request:
-        return $http.post(this.url, fd, metadata).
-            then(function (response) {
-                return response;
-            }, function (response) {
-                console.log(response);
-                alert("Error creating model.");
-            });
-    };
-
-    // This method gets a single model, based on the model's _id:
-    this.getModel = function (modelId) {
-        var url = this.url + modelId;
-        return $http.get(url).
-            then(function (response) {
-                return response;
-            }, function (response) {
-                console.log(response);
-                alert("Error finding this model.");
-            });
-    };
-
-    // This method updates a model:
-    this.updateModel = function (model) {
-        var url = this.url + model._id;
-        console.log(model._id);
-        return $http.put(url, model).
-            then(function (response) {
-                return response;
-            }, function (response) {
-                alert("Error editing this model.");
-                console.log(response);
-            });
-    };
-
-    // This method deletes a model:
-    this.deleteModel = function (modelId) {
-        var url = this.url + modelId;
-        var areYouSure = confirm("Are you sure you want to delete this model?");
-        if (!areYouSure) {
-            return;
-        }
-        return $http.delete(url).
-            then(function (response) {
-                return response;
-            }, function (response) {
-                alert("Error deleting this model.");
-                console.log(response);
-            });
-    };
-});
-
-//add controllers:
-app.controller("ListController", function (models, $scope) {
-    'use strict';
-    $scope.adminMode = adminMode;
-    $scope.models = models.data;
-});
-
-//add create model controller:
-app.controller("NewModelController", function ($scope, $location, Models) {
-    'use strict';
-    $scope.adminMode = adminMode;
-    $scope.back = function () {
-        $location.path("#/");
-    };
-
-    $scope.saveModel = function (model) {
-        Models.createModel(model).then(function (doc) {
-            console.log(doc);
+        $http.post($scope.url, fd, metadata).then(function (response) {
+            console.log(response);
             $location.path("#/");
         }, function (response) {
-            alert(response);
+            console.log(response);
+            alert("Error creating model.");
         });
     };
 });
 
 //add edit model controller:
-app.controller("EditModelController", function ($scope, $routeParams, Models) {
+app.controller("EditArtistController", function ($scope, $location, $routeParams, $http) {
     'use strict';
     $scope.adminMode = adminMode;
-    $scope.initialize = function () {
-        Models.getModel($routeParams.modelId).then(function (doc) {
-            $scope.model = doc.data;
-            if ($scope.model.dob) {
-                $scope.model.dob = new Date($scope.model.dob);
-            }
-        }, function (response) {
-            alert(response);
-        });
+    $scope.url = url;
+    $scope.getModel = function () {
+        var modelURL = $scope.url + $routeParams.modelId;
+        return $http.get(modelURL).
+            then(function (response) {
+                console.log(response);
+                $scope.model = response.data;
+                if ($scope.model.dob) {
+                    $scope.model.dob = new Date($scope.model.dob);
+                }
+            }, function (response) {
+                console.log(response);
+                alert("Error finding this model.");
+            });
     };
 
     $scope.toggleEdit = function () {
@@ -167,20 +108,35 @@ app.controller("EditModelController", function ($scope, $routeParams, Models) {
         $scope.modelFormUrl = "";
     };
 
-    $scope.saveModel = function (model) {
-        Models.updateModel(model);
-        $scope.editMode = false;
-        $scope.modelFormUrl = "";
+    $scope.updateModel = function (model) {
+        var modelURL = $scope.url + model._id;
+        return $http.put(modelURL, model).
+            then(function (response) {
+                console.log(response);
+                $scope.editMode = false;
+                $scope.modelFormUrl = "";
+            }, function (response) {
+                alert("Error editing this model.");
+                console.log(response);
+            });
     };
 
     $scope.deleteModel = function (modelId) {
-        Models.deleteModel(modelId).then(function () {
-            // once the model has been deleted, redirect to the
-            // list page:
-            window.location = "#/";
-        });
+        var modelURL = $scope.url + modelId;
+        var areYouSure = confirm("Are you sure you want to delete this model?");
+        if (!areYouSure) {
+            return;
+        }
+        return $http.delete(modelURL).
+            then(function (response) {
+                console.log(response);
+                $location.path("#/");
+            }, function (response) {
+                alert("Error deleting this model.");
+                console.log(response);
+            });
     };
 
     //call the initialize method:
-    $scope.initialize();
+    $scope.getModel();
 });

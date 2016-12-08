@@ -26,7 +26,8 @@
         <input class="form-control" type="text" ng-model="model.birthplace"> 
     </p>
     <p>
-        <button style="margin-top:20px" class="btn btn-primary" ng-click="saveModel(model)">Save</button>
+        <button style="margin-top:20px" class="btn btn-primary" ng-click="createModel(model)" ng-hide="model._id">Create</button>
+        <button style="margin-top:20px" class="btn btn-primary" ng-click="updateModel(model)" ng-hide="!model._id">Update</button>
         <button style="margin-top:20px" class="btn btn-default" ng-click="back()">Cancel</button>
     </p>
   </div>

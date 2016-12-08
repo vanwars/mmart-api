@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="modelsApp" ng-controller="myController">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    
+    <body>
+        
+        <div class="container">
+            <!-- Search form -->
+            <input id="search-term" type="text" ng-model="searchTerm" placeholder="Search for Album" ng-change="doSearch();">
+            <br>
+            This filter demo shows you how to order by name:<br><br>
+            <!-- Data gets output -->
+            <div class="thumbnail" ng-repeat="album in spotifyData.albums.items | orderBy: 'name'">
+                <img ng-src="{{ album.images[1].url }}">
+                <p>{{ album.name }}</p>
+                <span>{{ album.artists[0].name }}</span>
+            </div>
+        </div>
+        </div>
+        
+        <!-- JavaScript dependencies -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"></script>
+        
+        <!-- Your app -->
+        <script src="js/app.js"></script>
+    </body>
+</html>

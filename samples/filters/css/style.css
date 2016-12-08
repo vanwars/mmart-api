@@ -1,0 +1,15 @@
+body {
+  margin: 20px;
+}
+
+#search-term {
+    width: 400px;
+    margin-bottom: 20px;
+}
+.thumbnail {
+    width: 210px;
+    display: inline-block;
+    height: 300px;
+    vertical-align: top;
+    margin-right: 10px;
+}
