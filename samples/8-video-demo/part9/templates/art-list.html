@@ -1,0 +1,10 @@
+<a href="#/new/site">Add New Site</a>
+<h2>Public Art Sites</h2>
+
+<button class="btn btn-default" ng-click="medium='mural'">Murals</button> 
+<button class="btn btn-default" ng-click="medium='sculpture'">Sculptures</button>
+<button class="btn btn-default" ng-click="medium=''">Everything</button>
+<div ng-repeat="site in sites | orderBy: 'name' | filter: { type: medium } ">
+	
+	<a href="#/site/{{ site._id }}">{{ site.name }}</a>
+</div>

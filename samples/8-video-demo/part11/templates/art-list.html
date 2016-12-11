@@ -1,0 +1,20 @@
+<a href="#/new/site">Add New Site</a>
+<h2>Public Art Sites</h2>
+
+<button class="btn btn-default" ng-click="medium='mural'">Murals</button> 
+<button class="btn btn-default" ng-click="medium='sculpture'">Sculptures</button>
+<button class="btn btn-default" ng-click="medium=''">Everything</button>
+
+<a href="#map">View Map</a>
+<div class="site-entry" ng-repeat="site in sites | orderBy: 'name' | filter: { type: medium } ">
+	<div class="thumbnail-small" 
+		ng-repeat="photo in photos | filter: { site_id: site._id } | limitTo: 1">
+		<div style="background-image: url('{{ photo.image.items[2].file_path }}');"></div>
+	</div>
+	<div class="entry-label">
+		<a href="#/site/{{ site._id }}">{{ site.name }}</a><br>
+		<p>{{ site.loc_desc }}</p>
+		<p>Created: {{ site.year }}</p>
+	</div>
+	
+</div>

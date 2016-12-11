@@ -1,0 +1,7 @@
+<div id="map"></div>
+
+<div class="site-detail">
+	<div class="thumbnail-medium" ng-repeat="photo in photos | filter: { site_id: activeSiteID }">
+		<div style="background-image: url('{{ photo.image.items[2].file_path }}');"></div>
+	</div>
+</div>

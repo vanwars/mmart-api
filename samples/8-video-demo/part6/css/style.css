@@ -1,0 +1,5 @@
+.back, .back:active, .back:visited, .back:hover {
+    background: #15c !important;
+    color: white !important;
+    margin-right: 20px;
+}

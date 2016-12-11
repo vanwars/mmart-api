@@ -1,0 +1,34 @@
+<div class="row" ng-hide="model._id">
+    <div class="col-md-6">
+        <h2>Create New Artist</h2>
+    </div>
+</div>
+<div class="container">
+  <div>
+    <p>
+        <label>Name</label> 
+        <input class="form-control" type="text" ng-model="model.name"> 
+    </p>
+    <p ng-if="!model.image">
+        <label>Photo</label> 
+        <input id="image" class="form-control" type="file"> 
+    </p>
+    <p>
+        <label>Genre</label> 
+        <input class="form-control" type="text" ng-model="model.genre" required> 
+    </p>
+    <p>
+        <label>Date of Birth</label> 
+        <input class="form-control" type="date" ng-model="model.dob"> 
+    </p>
+    <p>
+        <label>Place of Birth</label> 
+        <input class="form-control" type="text" ng-model="model.birthplace"> 
+    </p>
+    <p>
+        <button style="margin-top:20px" class="btn btn-primary" ng-click="createModel(model)" ng-hide="model._id">Create</button>
+        <button style="margin-top:20px" class="btn btn-primary" ng-click="updateModel(model)" ng-hide="!model._id">Update</button>
+        <button style="margin-top:20px" class="btn btn-default" ng-click="back()">Cancel</button>
+    </p>
+  </div>
+</div>

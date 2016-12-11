@@ -1,0 +1,64 @@
+<h2>
+	{{ currentSite.name }}
+</h2>
+
+<button class="add-new btn btn-default" ng-click="showPhotoForm();">
+	<i class="fa fa-plus"></i> Add Photo
+</button>
+<div ng-show="viewMode">
+	<a ng-click="edit();"><i class="fa fa-edit"></i></a>
+	<a ng-click="delete();"><i class="fa fa-trash"></i></a>
+	<!-- a ng-click="showPhotoForm();"><i class="fa fa-plus"></i> Add Photo</a -->
+	<table class="table">
+		<tr>
+			<th>Contributors</th>
+			<td> {{ currentSite.contributors }}</td>
+		</tr>
+		<tr>
+			<th>About</th>
+			<td> {{ currentSite.about }}</td>
+		</tr>
+		<tr>
+			<th>Type</th>
+			<td> {{ currentSite.type }}</td>
+		</tr>
+		<tr>
+			<th>Tags</th>
+			<td> {{ currentSite.tags }}</td>
+		</tr>
+		<tr>
+			<th>Year</th>
+			<td> {{ currentSite.year }}</td>
+		</tr>
+		<tr>
+			<th>Location Description</th>
+			<td> {{ currentSite.loc_desc }}</td>
+		</tr>
+		<tr>
+			<th>Lat</th>
+			<td> {{ currentSite.lat }}</td>
+		</tr>
+		<tr>
+			<th>Lng</th>
+			<td> {{ currentSite.lng }}</td></tr>
+	</table>
+
+	<div class="thumbnail" ng-repeat="photo in photos">
+		<div style="background-image: url('{{ photo.image.items[2].file_path }}');"></div>
+		{{ photo.caption }}
+	</div>
+	<br></br>
+</div>
+
+<!-- Different hidden forms display here, depending on the mode -->
+<div ng-show="editMode">
+	<a ng-click="view();" >Cancel</a>
+	<div ng-include="formURL"></div>
+</div>
+
+<div ng-show="addPhotoMode">
+	<a ng-click="view();" >Cancel</a>
+	<div ng-include="addPhotoFormURL"></div>
+</div>
+
+

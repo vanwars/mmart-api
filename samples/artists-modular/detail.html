@@ -1,0 +1,21 @@
+<div class = "row">
+    <div class="col-md-6">
+        <h2>
+            {{ model.name }}
+        </h2>
+    </div>
+</div>
+<div ng-hide="editMode" class="container">
+    <div>
+        <p>{{ model.name }}
+        <a ng-click="toggleEdit()" ng-show="{{ adminMode }}"><i class="fa fa-edit"></i></a>
+        <a ng-click="deleteModel(model._id)" ng-show="{{ adminMode }}"><i class="fa fa-trash"></i></a>
+        </p>
+        <p ng-if="model.dob">{{ model.dob | date : format : timezone }}</p>
+        <p ng-if="model.genre">genre: {{ model.genre }} </p>
+        <p ng-if="model.birthplace">{{ model.birthplace }} </p>
+        <img ng-if="model.image" ng-src="{{ model.image.items[2].file_path }}" />
+    </div>
+</div>
+<!-- Model form -->
+<div ng-include="modelFormUrl">

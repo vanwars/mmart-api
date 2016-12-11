@@ -1,0 +1,18 @@
+ <h2>Upload a Photo of the {{ site.name }} Here</h2>
+
+ <label>Image:</label>
+ <input type="file" class="form-control" ng-model="photo.image" />
+ <br>
+ 
+ <label>Caption:</label>
+ <textarea class="form-control" ng-model="photo.caption"></textarea>
+ <br>
+
+ <label>Tags:</label>
+ <textarea class="form-control" ng-model="photo.tags"></textarea>
+ <br>
+
+ <pre>{{ photo | json }}</pre>
+ 
+ <!-- End Add Additional Form Fields Here -->
+ <label></label><button class="btn btn-primary" ng-click="uploadPhoto();">Upload</button>

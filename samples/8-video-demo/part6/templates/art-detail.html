@@ -1,0 +1,50 @@
+<a href="#/" class="btn btn-default" ng-show="viewMode">Back</a>
+
+<h2>
+	{{ currentSite.name }}
+</h2>
+<div ng-show="viewMode">
+	<a ng-click="edit();"><i class="fa fa-edit"></i></a>
+	<a ng-click="delete();"><i class="fa fa-trash"></i></a>
+	<table class="table">
+		<tr>
+			<th>Contributors</th>
+			<td> {{ currentSite.contributors }}</td>
+		</tr>
+		<tr>
+			<th>About</th>
+			<td> {{ currentSite.about }}</td>
+		</tr>
+		<tr>
+			<th>Type</th>
+			<td> {{ currentSite.type }}</td>
+		</tr>
+		<tr>
+			<th>Tags</th>
+			<td> {{ currentSite.tags }}</td>
+		</tr>
+		<tr>
+			<th>Year</th>
+			<td> {{ currentSite.year }}</td>
+		</tr>
+		<tr>
+			<th>Location Description</th>
+			<td> {{ currentSite.loc_desc }}</td>
+		</tr>
+		<tr>
+			<th>Lat</th>
+			<td> {{ currentSite.lat }}</td>
+		</tr>
+		<tr>
+			<th>Lng</th>
+			<td> {{ currentSite.lng }}</td>
+		</tr>
+	</table>
+</div>
+
+<div ng-show="!viewMode">
+	<a ng-click="view();" >Cancel</a>
+	<div ng-include="formURL">
+</div>
+
+

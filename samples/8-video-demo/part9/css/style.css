@@ -1,0 +1,34 @@
+.back, .back:active, .back:visited, .back:hover {
+    background: #15c !important;
+    color: white !important;
+    margin-right: 20px;
+}
+
+.table {
+	width: 500px;
+	border: solid 1px #ddd;
+}
+.table > tbody > tr > td, .table > tbody > tr > th {
+	padding: 4px;
+}
+.table th {
+	width: 170px;
+	color: #555;
+	text-align: right;
+	padding-right: 10px !important;
+	border: solid 1px #ddd;
+}
+
+.thumbnail {
+	width: 250px;
+	text-align: center;
+	display: inline-block;
+	margin-right: 10px
+}
+.thumbnail div {
+	width: 100%;
+	height: 250px;
+	background-position: center;
+  	background-size: cover;
+  	background-repeat: no-repeat;
+}

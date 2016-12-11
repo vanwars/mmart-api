@@ -1,0 +1,24 @@
+<div class="container">
+    <div class = "row">
+        <div class="col-md-12">
+            <h2>
+                Artists
+                <a style="float:right;" class="btn btn-default" href="#/new/artist" ng-show="{{ adminMode }}">
+                    <i class="fa fa-plus"></i> Add New
+                </a>
+            </h2>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <tbody>
+            <tr ng-repeat="model in models | orderBy: 'name'" style="cursor:pointer">
+                <td>
+                    <a ng-href="#/artist/{{model._id}}">
+                        <img ng-if="model.image" ng-src="{{ model.image.items[3].file_path }}" />
+                        {{ model.name }}
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

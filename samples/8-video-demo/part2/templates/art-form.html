@@ -1,0 +1,62 @@
+<h2>Create / Update Art Piece</h2>
+<!-- 
+	* -name
+	* -contributors
+	* -about
+	* -type (murals, sculptures, etc.)
+	* -tags
+	* -year
+	* -loc_desc (description of the location)
+	* lat (latitude)
+	* lng (longitude)
+-->
+ <label>Name:</label>
+ <input type="text" class="form-control" ng-model="site.name" />
+ <br>
+ 
+ <label>Contributors:</label>
+ <textarea class="form-control" ng-model="site.contributors"></textarea>
+ <br>
+
+ <label>About:</label>
+ <textarea class="form-control" ng-model="site.about"></textarea>
+ <br>
+
+ <label>Type:</label>
+ <select class="form-control" ng-model="site.type">
+ 	<option value="mural">Mural</option>
+ 	<option value="sculpture">Sculpture</option>
+ </select>
+ <br>
+
+ <label>Tags:</label>
+ <input type="text" class="form-control" ng-model="site.tags" />
+ <br>
+
+ <label>Year:</label>
+ <input type="text" class="form-control" ng-model="site.year" />
+ <br>
+
+  <label>Location Description:</label>
+ <input type="text" class="form-control" ng-model="site.loc_desc" />
+ <br>
+
+   <label>Lat:</label>
+ <input type="text" class="form-control" ng-model="site.lat" />
+ <br>
+
+   <label>Lng:</label>
+ <input type="text" class="form-control" ng-model="site.lng" />
+ <br>
+
+ <pre>{{ site | json }}</pre>
+ 
+ <!-- Add Additional Form Fields Here -->
+ 
+ 
+ 
+ 
+ 
+ 
+ <!-- End Add Additional Form Fields Here -->
+ <label></label><button class="btn btn-primary" ng-click="uploadData();">Add</button>

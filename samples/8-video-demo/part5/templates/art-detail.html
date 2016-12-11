@@ -1,0 +1,47 @@
+<a href="#/" class="btn btn-default">Back</a>
+
+<h2>
+	{{ currentSite.name }}
+	<a ng-click="edit();"><i class="fa fa-edit"></i></a>
+	<a ng-click="delete();"><i class="fa fa-trash"></i></a>
+</h2>
+<table class="table">
+	<tr>
+		<th>Contributors</th>
+		<td> {{ currentSite.contributors }}</td>
+	</tr>
+	<tr>
+		<th>About</th>
+		<td> {{ currentSite.about }}</td>
+	</tr>
+	<tr>
+		<th>Type</th>
+		<td> {{ currentSite.type }}</td>
+	</tr>
+	<tr>
+		<th>Tags</th>
+		<td> {{ currentSite.tags }}</td>
+	</tr>
+	<tr>
+		<th>Year</th>
+		<td> {{ currentSite.year }}</td>
+	</tr>
+	<tr>
+		<th>Location Description</th>
+		<td> {{ currentSite.loc_desc }}</td>
+	</tr>
+	<tr>
+		<th>Lat</th>
+		<td> {{ currentSite.lat }}</td>
+	</tr>
+	<tr>
+		<th>Lng</th>
+		<td> {{ currentSite.lng }}</td></t
+		r>
+</table>
+
+<!-- 
+	<div ng-include="modelFormUrl">
+-->
+
+

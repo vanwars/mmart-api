@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    
+    <body>
+        <div class="container">
+            <h1>Video Demo</h1>
+            <div ng-view class="angular-container">
+                <!-- All of your HTML templates will be injected here -->
+            </div>
+        </div>
+        
+        <!-- JavaScript dependencies -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+        <script src="https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js"></script>
+
+        <!-- Your app -->
+        <script src="js/app.js"></script>
+        <script src="js/controllers/createSite.js"></script>
+        <script src="js/controllers/listSites.js"></script>
+        <script src="js/controllers/editSite.js"></script>
+        <script src="js/controllers/map.js"></script>
+    </body>
+</html>
